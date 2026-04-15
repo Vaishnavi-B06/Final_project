@@ -24,7 +24,7 @@ The main objective of this project is to develop a platform that simplifies the 
 - Advanced filtering and search features
 
 ## 👩‍💻 Developed By
-Vaishnavi Bagale
-Suhani Kaldate
-Vaishnavi Kade
+Vaishnavi Bagale,
+Suhani Kaldate,
+Vaishnavi Kade,
 Samruddhi Pawar
