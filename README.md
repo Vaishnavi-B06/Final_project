@@ -14,6 +14,8 @@ SmartGlam is a modern web application developed to provide users with an easy an
 - CSS
 - JavaScript
 - FireBase
+- python 
+  
 
 ## 🎯 Objective
 The main objective of this project is to develop a platform that simplifies the process of discovering and managing fashion and beauty-related services while enhancing user engagement.
