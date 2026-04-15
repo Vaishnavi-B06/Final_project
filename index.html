@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartGlam — AI Beauty Analysis</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Gender pills removed */
+    .marquee-row {
+      overflow: hidden;
+      padding: 1.5rem 0;
+      background: var(--ivory);
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 3rem;
+      animation: marquee 22s linear infinite;
+      width: max-content;
+    }
+
+    .marquee-track span {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .marquee-track span i {
+      color: var(--rose-deep);
+      margin-right: 0.4rem;
+    }
+
+    @keyframes marquee {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    .testimonial-section {
+      padding: 5rem 6%;
+      background: var(--champagne);
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 3rem auto 0;
+    }
+
+    .testimonial-card {
+      background: var(--ivory);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      border: 1px solid rgba(180, 155, 120, 0.15);
+      box-shadow: 0 8px 24px rgba(61, 43, 26, 0.06);
+    }
+
+    .testimonial-stars {
+      color: #D4A040;
+      font-size: 0.9rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .testimonial-text {
+      font-size: 0.9rem;
+      color: var(--warm-gray);
+      line-height: 1.65;
+      margin-bottom: 1.2rem;
+      font-style: italic;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .author-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .author-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .author-tag {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body class="landing-body">
+
+  <!-- NAVBAR -->
+  <nav class="landing-nav" id="main-nav">
+    <h1 class="logo">✦ SmartGlam</h1>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#how">How It Works</a>
+      <a href="#features">Features</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="nav-auth">
+      <a href="login.html" class="nav-btn-login">Login</a>
+      <a href="signup.html" class="btn-outline-dark">Sign Up Free</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <span class="hero-eyebrow">✦ AI-Powered Beauty</span>
+      <h1 class="hero-title">
+        Look Your Best.<br>
+        <em>Every Occasion.</em>
+      </h1>
+      <p class="hero-subtitle">
+        Personalised AI beauty analysis. Upload a photo or describe your features — Gemini AI crafts your perfect look
+        with step-by-step tutorials.
+      </p>
+      <div class="hero-cta-row">
+        <a href="signup.html" class="btn btn-primary">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Get Started Free
+        </a>
+        <a href="login.html" class="btn-outline-dark">Login</a>
+      </div>
+      <p class="hero-badge">
+        <i class="fa-solid fa-lock" style="color:var(--rose-dark);"></i>
+        &nbsp;Your photos are never stored on our servers
+      </p>
+
+    </div>
+    <div class="hero-visual">
+      <div class="hero-img-wrap">
+        <img
+          src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+          alt="SmartGlam Beauty">
+        <div class="hero-float-badge badge-1">
+          <span class="badge-icon">💍</span>&nbsp; Occasion-Based Looks
+        </div>
+        <div class="hero-float-badge badge-2">
+          <span class="badge-icon">🤖</span>&nbsp; Gemini AI Powered
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-row">
+    <div class="marquee-track">
+      <span><i class="fa-solid fa-star"></i> AI Skin Analysis</span>
+      <span><i class="fa-solid fa-star"></i> Step-by-Step Tutorials</span>
+      <span><i class="fa-solid fa-star"></i> Beauty Guide</span>
+      <span><i class="fa-solid fa-star"></i> Wedding Looks</span>
+      <span><i class="fa-solid fa-star"></i> Budget-Friendly Products</span>
+      <span><i class="fa-solid fa-star"></i> 100% Personalised</span>
+      <span><i class="fa-solid fa-star"></i> Photo-Free Mode</span>
+      <!-- repeat for seamless loop -->
+      <span><i class="fa-solid fa-star"></i> AI Skin Analysis</span>
+      <span><i class="fa-solid fa-star"></i> Step-by-Step Tutorials</span>
+      <span><i class="fa-solid fa-star"></i> Beauty Guide</span>
+      <span><i class="fa-solid fa-star"></i> Wedding Looks</span>
+      <span><i class="fa-solid fa-star"></i> Budget-Friendly Products</span>
+      <span><i class="fa-solid fa-star"></i> 100% Personalised</span>
+      <span><i class="fa-solid fa-star"></i> Photo-Free Mode</span>
+    </div>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="stats-row">
+
+    <div class="stat-item">
+      <span class="stat-number">3</span>
+      <span class="stat-label">Occasions</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">AI</span>
+      <span class="stat-label">Gemini 2.5 Flash</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">100%</span>
+      <span class="stat-label">Personalised</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">Free</span>
+      <span class="stat-label">Always</span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about" class="about-section">
+    <div class="about-container">
+      <div class="about-image scroll-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+          alt="Team SmartGlam">
+      </div>
+      <div class="about-text scroll-hidden" style="transition-delay:0.12s;">
+        <span class="section-eyebrow">Our Story</span>
+        <h2>Hi, We Are<br>Team SmartGlam</h2>
+        <p style="color:var(--champagne-deep);font-weight:600;margin-bottom:1rem;font-size:0.9rem;">Final Year Major
+          Project — 2026</p>
+        <p style="color:var(--warm-gray);line-height:1.7;margin-bottom:1.5rem;">We built SmartGlam to make professional
+          beauty advice accessible to everyone — through the power of AI. Whether you're seeking a casual look or a
+          bridal style, SmartGlam delivers expert guidance instantly.</p>
+        <h3 style="font-family:var(--font-display);font-size:1.25rem;margin-bottom:1rem;color:var(--ink);">Developed By
+        </h3>
+        <ul class="team-list">
+          <li><i class="fa-solid fa-user-check"></i> <strong>Vaishnavi Bagale</strong></li>
+          <li><i class="fa-solid fa-user-check"></i> <strong>Suhani Kaldate</strong></li>
+          <li><i class="fa-solid fa-user-check"></i> <strong>Vaishnavi Kade</strong></li>
+          <li><i class="fa-solid fa-user-check"></i> <strong>Samruddhi Pawar</strong></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="how-section">
+    <div class="section-title-center">
+      <span class="section-eyebrow" style="color:var(--champagne-deep);">Simple Process</span>
+      <h2>How SmartGlam Works</h2>
+      <p>Three steps to your perfect personalised look.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card scroll-hidden">
+        <span class="step-number">01</span>
+        <span class="step-emoji">🔐</span>
+        <h4>Create Account</h4>
+        <p>Sign up securely with email. Protected by Firebase Auth.</p>
+      </div>
+      <div class="step-card scroll-hidden" style="transition-delay:0.1s;">
+        <span class="step-number">02</span>
+        <span class="step-emoji">📸</span>
+        <h4>Upload or Describe</h4>
+        <p>Share a selfie or pick your skin tone — no photo required for privacy.</p>
+      </div>
+      <div class="step-card scroll-hidden" style="transition-delay:0.2s;">
+        <span class="step-number">03</span>
+        <span class="step-emoji">✨</span>
+        <h4>Get Your Look</h4>
+        <p>Receive AI analysis + interactive step-by-step tutorials with products.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" class="features-section">
+    <div class="section-title-center" style="margin-bottom:3rem;">
+      <span class="section-eyebrow" style="color:var(--champagne-deep);">What You Get</span>
+      <h2>Everything in One Place</h2>
+    </div>
+    <div class="features-grid">
+      <div class="landing-feature-card scroll-hidden">
+        <span class="feature-number">01</span>
+        <span style="font-size:2rem;display:block;margin-bottom:1rem;">🔍</span>
+        <h4>AI Skin &amp; Face Analysis</h4>
+        <p style="font-size:0.84rem;color:var(--warm-gray);margin-top:0.5rem;line-height:1.55;">Identify skin type,
+          tone, undertone and concerns automatically via Gemini AI.</p>
+      </div>
+      <div class="landing-feature-card scroll-hidden" style="transition-delay:0.12s;">
+        <span class="feature-number">02</span>
+        <span style="font-size:2rem;display:block;margin-bottom:1rem;">💄</span>
+        <h4>Step-by-Step Beauty Tutorial</h4>
+        <p style="font-size:0.84rem;color:var(--warm-gray);margin-top:0.5rem;line-height:1.55;">Interactive face model
+          shows where and how to apply each product, step by step.</p>
+      </div>
+      <div class="landing-feature-card scroll-hidden" style="transition-delay:0.24s;">
+        <span class="feature-number">03</span>
+        <span style="font-size:2rem;display:block;margin-bottom:1rem;">🛍️</span>
+        <h4>Curated Product Matches</h4>
+        <p style="font-size:0.84rem;color:var(--warm-gray);margin-top:0.5rem;line-height:1.55;">Find budget-friendly
+          products perfectly suited to your skin profile and the look you want.</p>
+      </div>
+    </div>
+    <div class="text-center" style="margin-top:3rem;">
+      <a href="signup.html" class="btn btn-primary" style="padding:1rem 2.6rem;font-size:0.95rem;">Create Your Profile —
+        It's Free</a>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonial-section">
+    <div class="section-title-center">
+      <span class="section-eyebrow" style="color:var(--champagne-deep);">People Love SmartGlam</span>
+      <h2>What Our Users Say</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card scroll-hidden">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"The step-by-step tutorial was incredible — it showed me exactly where to apply each
+          product. My bridal look turned out perfect!"</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:var(--rose-light);">💁‍♀️</div>
+          <div>
+            <div class="author-name">Priya S.</div>
+            <div class="author-tag">Bridal Look • Wedding</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card scroll-hidden" style="transition-delay:0.1s;">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"The AI product recommendations were absolutely amazing. I found affordable dupes
+          that perfectly match my skin tone!"</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:#E8D8F0;">👩🏽</div>
+          <div>
+            <div class="author-name">Ananya D.</div>
+            <div class="author-tag">Party Glam • Casual</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card scroll-hidden" style="transition-delay:0.2s;">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"I used the photo-free skin tone selector since I'm camera shy. The AI still gave me
+          incredibly accurate recommendations!"</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:var(--olive-light);">🙋‍♀️</div>
+          <div>
+            <div class="author-name">Sneha K.</div>
+            <div class="author-tag">Party Look • Skin Profile</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="contact" class="split-footer">
+    <div class="footer-left">
+      <h3>Reach Out —<br>We Love Questions!</h3>
+      <p>Engineering the next wave of beauty-tech from India.</p>
+      <div class="contact-emails">
+        <p><i class="fa-solid fa-envelope"></i> vaishnavibagale@gmail.com</p>
+        <p><i class="fa-solid fa-envelope"></i> suhanikaldate@gmail.com</p>
+        <p><i class="fa-solid fa-envelope"></i> vaishnavikade@gmail.com</p>
+        <p><i class="fa-solid fa-envelope"></i> samruddhipawar@gmail.com</p>
+      </div>
+      <div class="social-links">
+        <i class="fa-brands fa-github"></i>
+        <i class="fa-brands fa-linkedin"></i>
+        <i class="fa-brands fa-instagram"></i>
+      </div>
+    </div>
+    <div class="footer-right">
+      <h3>Yes, I Want My<br>Perfect Look!</h3>
+      <p>Sign up — completely free, always.</p>
+      <a href="signup.html" class="btn-outline-dark" style="border-color:var(--champagne);color:var(--champagne);">Sign
+        Me Up →</a>
+      <img
+        src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
+        alt="Decor" class="footer-decor">
+    </div>
+  </footer>
+  <div class="footer-bottom">
+    <p>&copy; 2026 SmartGlam Project &middot; Created by Vaishnavi, Suhani, Vaishnavi &amp; Samruddhi</p>
+  </div>
+
+  <script>
+    const nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40));
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const els = document.querySelectorAll('.scroll-hidden');
+      const fallback = setTimeout(() => els.forEach(el => el.classList.add('scroll-visible')), 300);
+      if ('IntersectionObserver' in window) {
+        const obs = new IntersectionObserver(entries => {
+          entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('scroll-visible'); obs.unobserve(e.target); } });
+        }, { threshold: 0, rootMargin: '0px 0px -10px 0px' });
+        els.forEach(el => obs.observe(el));
+      } else {
+        clearTimeout(fallback);
+        els.forEach(el => el.classList.add('scroll-visible'));
+      }
+    });
+  </script>
+</body>
+
+</html>

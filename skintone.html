@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skin Profile — SmartGlam</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    .skintone-wrap {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 3rem 5%;
+    }
+
+    .skintone-box {
+      width: 100%;
+      max-width: 640px;
+    }
+
+    .skintone-box h2 {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .privacy-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      background: linear-gradient(135deg, var(--olive-light), var(--champagne));
+      border: 1px solid var(--olive-mid);
+      border-radius: var(--radius-md);
+      padding: 0.9rem 1.2rem;
+      margin: 1.2rem 0 2rem;
+      font-size: 0.83rem;
+      color: var(--olive-deep);
+      font-weight: 600;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--rose-dark);
+      margin-bottom: 0.9rem;
+      display: block;
+    }
+
+    /* Tone swatches */
+    .tone-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.8rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .tone-swatch {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: all 0.3s var(--ease-spring);
+      position: relative;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    }
+
+    .tone-swatch:hover {
+      transform: scale(1.18);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+    }
+
+    .tone-swatch.selected {
+      border-color: var(--rose-dark);
+      box-shadow: 0 0 0 4px rgba(196, 130, 138, 0.3), 0 8px 22px rgba(0, 0, 0, 0.18);
+      transform: scale(1.2);
+    }
+
+    .tone-swatch.selected::after {
+      content: '✓';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 700;
+      font-size: 1rem;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .tone-labels {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.8rem;
+      margin-bottom: 2rem;
+    }
+
+    .tone-label-text {
+      font-size: 0.62rem;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    /* Undertone pills */
+    .undertone-row {
+      display: flex;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .undertone-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.1rem;
+      border-radius: var(--radius-pill);
+      border: 1.5px solid var(--glass-border);
+      background: var(--champagne);
+      cursor: pointer;
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: var(--warm-gray);
+      transition: var(--t-fast);
+    }
+
+    .undertone-pill:hover {
+      background: var(--rose-light);
+      border-color: var(--rose);
+      color: var(--rose-dark);
+    }
+
+    .undertone-pill.selected {
+      background: var(--rose-dark);
+      border-color: var(--rose-dark);
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(139, 74, 82, 0.3);
+    }
+
+    .undertone-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Skin type */
+    .skintype-row {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .skintype-btn {
+      padding: 0.55rem 1.1rem;
+      border-radius: var(--radius-pill);
+      border: 1.5px solid var(--glass-border);
+      background: var(--champagne);
+      cursor: pointer;
+      font-size: 0.84rem;
+      color: var(--warm-gray);
+      font-family: var(--font-body);
+      transition: var(--t-fast);
+    }
+
+    .skintype-btn:hover {
+      background: var(--olive-light);
+      border-color: var(--olive-mid);
+      color: var(--olive-deep);
+    }
+
+    .skintype-btn.selected {
+      background: var(--olive);
+      border-color: var(--olive-deep);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Concerns */
+    .concern-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+      gap: 0.6rem;
+      margin-bottom: 2rem;
+    }
+
+    .concern-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--glass-border);
+      background: var(--champagne);
+      cursor: pointer;
+      font-size: 0.81rem;
+      color: var(--warm-gray);
+      transition: var(--t-fast);
+    }
+
+    .concern-chip:hover {
+      background: var(--rose-light);
+      border-color: var(--rose);
+    }
+
+    .concern-chip.selected {
+      background: linear-gradient(135deg, var(--rose-light), var(--champagne));
+      border-color: var(--rose);
+      color: var(--rose-dark);
+      font-weight: 600;
+    }
+
+    /* Preview card */
+    .preview-card {
+      background: linear-gradient(135deg, var(--rose-light), var(--champagne));
+      border: 1px solid var(--rose);
+      border-radius: var(--radius-lg);
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .preview-tone-circle {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 3px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+      transition: background 0.3s ease;
+      background: #c68642;
+    }
+
+    .preview-info .preview-title {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      color: var(--ink);
+      margin-bottom: 0.2rem;
+    }
+
+    .preview-info .preview-summary {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* Progress bar */
+    .profile-progress {
+      margin-bottom: 2rem;
+    }
+
+    .profile-progress-bar {
+      height: 4px;
+      background: var(--champagne);
+      border-radius: 2px;
+      margin-bottom: 0.4rem;
+      overflow: hidden;
+    }
+
+    .profile-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--rose-deep), var(--champagne-deep));
+      border-radius: 2px;
+      transition: width 0.4s var(--ease-smooth);
+    }
+
+    .profile-progress-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+
+<body class="dashboard-body">
+  <div class="orb-bg orb-1"></div>
+  <div class="orb-bg orb-2"></div>
+
+  <nav class="glass-nav">
+    <h1 class="logo">✦ SmartGlam</h1>
+    <a href="dashboard.html" class="btn btn-outline" style="font-size:0.82rem;padding:0.5rem 1.2rem;">← Back</a>
+  </nav>
+
+  <div class="skintone-wrap">
+    <div class="glass-container skintone-box">
+      <span
+        style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--rose-dark);">Step
+        1 of 2 · Photo-Free Mode</span>
+      <h2>Describe Your Skin ✨</h2>
+      <p class="subtitle" style="margin-bottom:0;">No photo needed — tell us about your skin and we'll craft the perfect
+        look.</p>
+
+      <div class="privacy-badge">
+        <span style="font-size:1.3rem;">🔒</span>
+        100% photo-free — your appearance stays private. Only your selections are shared with AI.
+      </div>
+
+      <!-- Progress -->
+      <div class="profile-progress">
+        <div class="profile-progress-bar">
+          <div class="profile-progress-fill" id="prog-fill" style="width:0%;"></div>
+        </div>
+        <div class="profile-progress-label" id="prog-label">Select your skin tone to begin</div>
+      </div>
+
+      <!-- 1. Skin Tone -->
+      <span class="section-label">1 · Skin Tone</span>
+      <div class="tone-grid" id="tone-grid"></div>
+      <div class="tone-labels" id="tone-labels"></div>
+
+      <!-- 2. Undertone -->
+      <span class="section-label">2 · Undertone</span>
+      <div class="undertone-row">
+        <div class="undertone-pill" onclick="selectUndertone('Cool', this)">
+          <div class="undertone-dot" style="background:linear-gradient(135deg,#b8c4e8,#d4b8e8);"></div> Cool (Pink /
+          Blue)
+        </div>
+        <div class="undertone-pill" onclick="selectUndertone('Warm', this)">
+          <div class="undertone-dot" style="background:linear-gradient(135deg,#e8c878,#e8a855);"></div> Warm (Golden /
+          Yellow)
+        </div>
+        <div class="undertone-pill" onclick="selectUndertone('Neutral', this)">
+          <div class="undertone-dot" style="background:linear-gradient(135deg,#d4c4a8,#c8b898);"></div> Neutral (Mix)
+        </div>
+        <div class="undertone-pill" onclick="selectUndertone('Olive', this)">
+          <div class="undertone-dot" style="background:linear-gradient(135deg,#b8c898,#9ab878);"></div> Olive (Green /
+          Warm)
+        </div>
+      </div>
+
+      <!-- 3. Skin Type -->
+      <span class="section-label">3 · Skin Type</span>
+      <div class="skintype-row">
+        <button class="skintype-btn" onclick="selectSkinType('Oily', this)">💧 Oily</button>
+        <button class="skintype-btn" onclick="selectSkinType('Dry', this)">🏜️ Dry</button>
+        <button class="skintype-btn" onclick="selectSkinType('Combination', this)">🌗 Combination</button>
+        <button class="skintype-btn" onclick="selectSkinType('Normal', this)">✅ Normal</button>
+        <button class="skintype-btn" onclick="selectSkinType('Sensitive', this)">🌸 Sensitive</button>
+      </div>
+
+      <!-- 4. Concerns -->
+      <span class="section-label">4 · Skin Concerns <span style="font-weight:400;opacity:0.6;">(select all that
+          apply)</span></span>
+      <div class="concern-grid">
+        <div class="concern-chip" onclick="toggleConcern('Acne / Breakouts', this)"><span>🔴</span> Acne / Breakouts
+        </div>
+        <div class="concern-chip" onclick="toggleConcern('Dark Circles', this)"><span>🌑</span> Dark Circles</div>
+        <div class="concern-chip" onclick="toggleConcern('Pigmentation', this)"><span>🟤</span> Pigmentation</div>
+        <div class="concern-chip" onclick="toggleConcern('Dullness', this)"><span>🌫️</span> Dullness</div>
+        <div class="concern-chip" onclick="toggleConcern('Fine Lines', this)"><span>〰️</span> Fine Lines</div>
+        <div class="concern-chip" onclick="toggleConcern('Redness', this)"><span>🌹</span> Redness</div>
+        <div class="concern-chip" onclick="toggleConcern('Uneven Texture', this)"><span>🪨</span> Uneven Texture</div>
+        <div class="concern-chip" onclick="toggleConcern('Large Pores', this)"><span>🔬</span> Large Pores</div>
+        <div class="concern-chip" onclick="toggleConcern('None / Clear Skin', this)"><span>🌟</span> None / Clear Skin
+        </div>
+      </div>
+
+      <!-- Live preview -->
+      <div class="preview-card">
+        <div class="preview-tone-circle" id="preview-circle"></div>
+        <div class="preview-info">
+          <div class="preview-title" id="preview-title">Your Skin Profile</div>
+          <div class="preview-summary" id="preview-summary">Select options above to build your profile...</div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button id="analyze-btn" class="btn btn-primary" disabled style="flex:1;justify-content:center;"
+          onclick="proceedToOccasion()">
+          Next: Choose Occasion →
+        </button>
+        <a href="upload.html" class="btn btn-outline" style="font-size:0.84rem;">📸 Use Photo Instead</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="loader" class="hidden">
+    <div class="spinner"></div>
+    <p>Saving your profile...</p>
+  </div>
+  <div id="toast-container"></div>
+
+  <script src="js/script.js"></script>
+  <script>
+    const TONES = [
+      { label: 'Porcelain', hex: '#F5E6D3' },
+      { label: 'Fair', hex: '#EAC9A3' },
+      { label: 'Light', hex: '#D4A574' },
+      { label: 'Medium', hex: '#C68642' },
+      { label: 'Tan', hex: '#A0622A' },
+      { label: 'Deep', hex: '#5C2E0E' }
+    ];
+
+    let selectedTone = null, selectedUndertone = null, selectedSkinType = null, selectedConcerns = [];
+
+    const toneGrid = document.getElementById('tone-grid');
+    const toneLabels = document.getElementById('tone-labels');
+    TONES.forEach((t, i) => {
+      const sw = document.createElement('div');
+      sw.className = 'tone-swatch';
+      sw.style.background = t.hex;
+      sw.title = t.label;
+      sw.addEventListener('click', () => selectTone(t, sw));
+      toneGrid.appendChild(sw);
+
+      const lbl = document.createElement('div');
+      lbl.className = 'tone-label-text';
+      lbl.textContent = t.label;
+      toneLabels.appendChild(lbl);
+    });
+
+    function selectTone(tone, el) {
+      document.querySelectorAll('.tone-swatch').forEach(s => s.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedTone = tone;
+      document.getElementById('preview-circle').style.background = tone.hex;
+      updateProgress(); updatePreview();
+    }
+    function selectUndertone(val, el) {
+      document.querySelectorAll('.undertone-pill').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedUndertone = val;
+      updateProgress(); updatePreview();
+    }
+    function selectSkinType(val, el) {
+      document.querySelectorAll('.skintype-btn').forEach(b => b.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedSkinType = val;
+      updateProgress(); updatePreview();
+    }
+    function toggleConcern(val, el) {
+      el.classList.toggle('selected');
+      if (el.classList.contains('selected')) { if (!selectedConcerns.includes(val)) selectedConcerns.push(val); }
+      else { selectedConcerns = selectedConcerns.filter(c => c !== val); }
+      updateProgress(); updatePreview();
+    }
+
+    function updateProgress() {
+      const done = [!!selectedTone, !!selectedUndertone, !!selectedSkinType, selectedConcerns.length > 0];
+      const count = done.filter(Boolean).length;
+      document.getElementById('prog-fill').style.width = (count / 4 * 100) + '%';
+      const labels = ['Select your skin tone to begin', 'Now pick your undertone', 'Select your skin type', 'Add your skin concerns', 'All done — ready to continue!'];
+      document.getElementById('prog-label').textContent = labels[Math.min(count, 4)];
+      document.getElementById('analyze-btn').disabled = !(selectedTone && selectedUndertone && selectedSkinType);
+    }
+
+    function updatePreview() {
+      const parts = [];
+      if (selectedTone) parts.push(selectedTone.label + ' skin');
+      if (selectedUndertone) parts.push(selectedUndertone + ' undertone');
+      if (selectedSkinType) parts.push(selectedSkinType + ' skin type');
+      if (selectedConcerns.length > 0) parts.push('Concerns: ' + selectedConcerns.slice(0, 3).join(', '));
+      document.getElementById('preview-title').textContent = selectedTone ? selectedTone.label + ' Skin Profile' : 'Your Skin Profile';
+      document.getElementById('preview-summary').textContent = parts.length > 0 ? parts.join(' · ') : 'Select options above to build your profile...';
+    }
+
+    function proceedToOccasion() {
+      if (!selectedTone || !selectedUndertone || !selectedSkinType) {
+        showToast('Please select skin tone, undertone and skin type', 'error');
+        return;
+      }
+      const profile = {
+        mode: 'skintone',
+        tone: selectedTone.label,
+        toneHex: selectedTone.hex,
+        undertone: selectedUndertone,
+        skinType: selectedSkinType,
+        concerns: selectedConcerns.length > 0 ? selectedConcerns : ['None specified']
+      };
+      localStorage.setItem('skinProfile', JSON.stringify(profile));
+      localStorage.removeItem('uploadedImageBase64');
+      toggleLoader(true, 'Saving your profile...');
+      setTimeout(() => window.location.href = 'occasion.html', 700);
+    }
+  </script>
+</body>
+
+</html>

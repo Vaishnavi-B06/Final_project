@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Photo — SmartGlam</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    .upload-page-wrap {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 5%;
+    }
+
+    .upload-card {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .upload-card h2 {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 0.4rem;
+    }
+
+    .upload-card p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.8rem;
+      line-height: 1.6;
+    }
+
+    .camera-row {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .camera-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--champagne);
+      border: 1.5px solid var(--champagne-mid);
+      color: var(--sand-deep);
+      border-radius: var(--radius-pill);
+      padding: 0.6rem 1.4rem;
+      cursor: pointer;
+      font-size: 0.84rem;
+      font-weight: 600;
+      font-family: var(--font-body);
+      transition: var(--t-fast);
+    }
+
+    .camera-btn:hover {
+      background: var(--sand);
+      border-color: var(--sand-deep);
+    }
+
+    .tips-row {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-top: 1.2rem;
+    }
+
+    .tip-chip {
+      background: var(--champagne);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-pill);
+      padding: 0.3rem 0.9rem;
+      font-size: 0.76rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body class="dashboard-body">
+  <div class="orb-bg orb-1"></div>
+  <div class="orb-bg orb-2"></div>
+
+  <nav class="glass-nav">
+    <h1 class="logo">✦ SmartGlam</h1>
+    <a href="dashboard.html" class="btn btn-outline" style="font-size:0.82rem;padding:0.5rem 1.2rem;">← Dashboard</a>
+  </nav>
+
+  <div class="upload-page-wrap">
+    <div class="glass-container upload-card">
+
+
+      <span
+        style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--rose-dark);">Step
+        1 of 2</span>
+      <h2>Upload Your Photo 📸</h2>
+      <p>We'll analyse your face and skin for personalised AI recommendations. Nothing is stored on our servers.</p>
+
+      <div class="upload-area" id="drop-zone" onclick="document.getElementById('file-input').click()">
+        <input type="file" id="file-input" hidden accept="image/*">
+        <div id="upload-placeholder" style="text-align:center;">
+          <span class="upload-icon">📁</span>
+          <p style="font-size:0.9rem;color:var(--warm-gray);">Drag & drop or <span
+              style="color:var(--rose-dark);font-weight:700;">click to browse</span></p>
+          <p style="font-size:0.76rem;color:var(--muted);margin-top:0.4rem;">JPG, PNG up to 32MB</p>
+        </div>
+        <img id="image-preview" src="" alt="Preview" class="preview-img hidden">
+      </div>
+
+      <div class="tips-row">
+        <span class="tip-chip">☀️ Good lighting</span>
+        <span class="tip-chip">👁️ Face clearly visible</span>
+        <span class="tip-chip">🚫 No heavy filters</span>
+        <span class="tip-chip">📐 Front-facing</span>
+      </div>
+
+      <div class="camera-row">
+        <button class="camera-btn" onclick="openCamera()">📷 Use Camera</button>
+        <button id="upload-btn" class="btn btn-primary" disabled style="flex:1;justify-content:center;">
+          Next: Choose Occasion →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Camera modal -->
+  <div id="camera-modal"
+    style="display:none;position:fixed;inset:0;background:rgba(26,18,8,0.7);z-index:9000;align-items:center;justify-content:center;">
+    <div
+      style="background:var(--ivory);border-radius:var(--radius-xl);padding:2rem;text-align:center;max-width:420px;width:90%;box-shadow:0 40px 80px rgba(0,0,0,0.3);">
+      <h3 style="font-family:var(--font-display);margin-bottom:1.2rem;color:var(--ink);">Take a Selfie 📸</h3>
+      <video id="camera-video" autoplay playsinline style="width:100%;border-radius:var(--radius-lg);"></video>
+      <div style="display:flex;gap:1rem;margin-top:1.2rem;justify-content:center;">
+        <button class="btn btn-primary" onclick="capturePhoto()">📸 Capture</button>
+        <button class="btn btn-outline" onclick="closeCamera()">Cancel</button>
+      </div>
+      <canvas id="camera-canvas" style="display:none;"></canvas>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <div id="loader" class="hidden">
+    <div class="spinner"></div>
+    <p>Uploading...</p>
+  </div>
+
+  <script src="https://unpkg.com/appwrite@14.0.1"></script>
+  <script src="js/appwrite.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+
+    let cameraStream = null;
+    async function openCamera() {
+      const modal = document.getElementById('camera-modal');
+      modal.style.display = 'flex';
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+        document.getElementById('camera-video').srcObject = cameraStream;
+      } catch (e) {
+        showToast('Camera not available', 'error');
+        modal.style.display = 'none';
+      }
+    }
+    function capturePhoto() {
+      const video = document.getElementById('camera-video');
+      const canvas = document.getElementById('camera-canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+      localStorage.setItem('uploadedImageBase64', dataUrl);
+      document.getElementById('image-preview').src = dataUrl;
+      document.getElementById('image-preview').classList.remove('hidden');
+      document.getElementById('upload-placeholder').classList.add('hidden');
+      document.getElementById('upload-btn').disabled = false;
+      closeCamera();
+      showToast('Photo captured! ✨', 'success');
+    }
+    function closeCamera() {
+      document.getElementById('camera-modal').style.display = 'none';
+      if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+    }
+    document.getElementById('upload-btn').addEventListener('click', () => {
+      window.location.href = 'occasion.html';
+    });
+  </script>
+</body>
+
+</html>

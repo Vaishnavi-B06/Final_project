@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skincare Routine Builder — SmartGlam</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .routine-wrap {
+      max-width: 900px;
+      margin: 3rem auto;
+      padding: 0 5%;
+    }
+
+    .routine-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .routine-header h2 {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      color: var(--ink);
+      margin-bottom: 0.8rem;
+    }
+
+    .routine-header p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .skin-profile-summary {
+      background: linear-gradient(135deg, var(--champagne), var(--rose-light));
+      border: 1px solid var(--rose);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .profile-details h4 {
+      font-family: var(--font-display);
+      color: var(--rose-dark);
+      font-size: 1.2rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .profile-details p {
+      font-size: 0.9rem;
+      color: var(--warm-gray);
+      margin: 0;
+    }
+
+    .no-profile-msg {
+      text-align: center;
+      padding: 3rem;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+    }
+
+    .routine-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .routine-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .routine-column {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: 2rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+    }
+
+    .routine-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .step-item {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .step-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .step-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--rose-light);
+      color: var(--rose-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .pm-col .step-icon {
+      background: var(--olive-light);
+      color: var(--olive-deep);
+    }
+
+    .step-content h4 {
+      font-size: 1rem;
+      color: var(--ink);
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .step-content p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .ingredient-tag {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.6rem;
+      background: var(--ivory);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-pill);
+      color: var(--rose-dark);
+      margin-top: 0.5rem;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body class="dashboard-body">
+  <div class="orb-bg orb-1"></div>
+  <div class="orb-bg orb-2"></div>
+
+  <nav class="glass-nav">
+    <h1 class="logo">✦ SmartGlam</h1>
+    <a href="dashboard.html" class="btn btn-outline" style="font-size:0.82rem;padding:0.5rem 1.2rem;">← Dashboard</a>
+  </nav>
+
+  <div class="routine-wrap">
+    <div class="routine-header">
+      <h2>Your Tailored Skincare Routine</h2>
+      <p>A smart, step-by-step AM/PM regimen carefully generated based on your unique skin profile and concerns.</p>
+    </div>
+
+    <div id="no-profile" class="no-profile-msg" style="display: none;">
+      <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; color: var(--rose-dark); margin-bottom: 1rem;"></i>
+      <h3>Skin Profile Missing</h3>
+      <p style="margin-bottom: 1.5rem; color: var(--muted);">We need to know a little about your skin to build your routine.</p>
+      <a href="skintone.html" class="btn btn-primary" style="display: inline-flex;">Complete Skin Profile</a>
+    </div>
+
+    <div id="routine-content" style="display: none;">
+      <div class="skin-profile-summary">
+        <div class="profile-details">
+          <h4>Custom Routine For:</h4>
+          <p id="profile-desc">Oily Skin · Acne, Large Pores</p>
+        </div>
+        <button onclick="window.location.href='skintone.html'" class="btn btn-outline" style="font-size: 0.8rem; padding: 0.5rem 1rem;">Update Profile</button>
+      </div>
+
+      <div class="routine-grid">
+        <!-- AM Routine -->
+        <div class="routine-column am-col">
+          <div class="routine-title">
+            <i class="fa-solid fa-sun" style="color: #FACC15;"></i> Morning Routine
+          </div>
+          <div id="am-steps"></div>
+        </div>
+
+        <!-- PM Routine -->
+        <div class="routine-column pm-col">
+          <div class="routine-title">
+            <i class="fa-solid fa-moon" style="color: #6366F1;"></i> Evening Routine
+          </div>
+          <div id="pm-steps"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const profileStr = localStorage.getItem('skinProfile');
+      
+      if (!profileStr) {
+        document.getElementById('no-profile').style.display = 'block';
+        return;
+      }
+
+      try {
+        const profile = JSON.parse(profileStr);
+        document.getElementById('routine-content').style.display = 'block';
+
+        // Set summary
+        const skinType = profile.skinType || "Normal";
+        const concerns = profile.concerns ? profile.concerns.join(', ') : "None specified";
+        document.getElementById('profile-desc').textContent = `${skinType} Skin · Concerns: ${concerns}`;
+
+        generateRoutine(skinType, profile.concerns || []);
+      } catch (e) {
+        document.getElementById('no-profile').style.display = 'block';
+      }
+    });
+
+    function generateRoutine(skinType, concerns) {
+      let amSteps = [];
+      let pmSteps = [];
+
+      // 1. Cleanser logic
+      if (skinType === 'Oily' || skinType === 'Combination') {
+        amSteps.push({ icon: 'fa-droplet', title: 'Gentle Foaming Cleanser', desc: 'Removes excess overnight sebum without stripping the skin.', tag: 'Salicylic Acid (BHA)' });
+        pmSteps.push({ icon: 'fa-soap', title: 'Double Cleanse (Balm + Gel)', desc: 'Melt away makeup/SPF, followed by purifying gel cleanser.', tag: 'Niacinamide' });
+      } else if (skinType === 'Dry' || skinType === 'Sensitive') {
+        amSteps.push({ icon: 'fa-droplet', title: 'Hydrating Cream Cleanser', desc: 'A gentle, non-foaming wash to protect the skin barrier.', tag: 'Ceramides' });
+        pmSteps.push({ icon: 'fa-soap', title: 'Cleansing Oil + Milk', desc: 'Soothes while breaking down waterproof products gently.', tag: 'Oat Extract' });
+      } else {
+        amSteps.push({ icon: 'fa-droplet', title: 'Water-based Cleanser', desc: 'A standard pH-balanced cleanser to start fresh.', tag: 'Glycerin' });
+        pmSteps.push({ icon: 'fa-soap', title: 'Micellar Water + Cleanser', desc: 'Thoroughly removes the daily grime.', tag: 'pH 5.5' });
+      }
+
+      // 2. Treatment / Toner logic based on concerns
+      let morningTreatment = { icon: 'fa-spray-can', title: 'Antioxidant Serum', desc: 'Protects against environmental stressors and brightens.', tag: 'Vitamin C' };
+      let nightTreatment = { icon: 'fa-flask', title: 'Repair Serum', desc: 'Aids in skin regeneration while you sleep.', tag: 'Peptides' };
+
+      if (concerns.includes('Acne / Breakouts')) {
+        nightTreatment = { icon: 'fa-bacterium', title: 'Blemish Treatment', desc: 'Targeted treatment to clear pores and reduce inflammation.', tag: 'Retinoids / Adapalene' };
+      } else if (concerns.includes('Pigmentation') || concerns.includes('Dark Circles')) {
+        morningTreatment = { icon: 'fa-sun-plant-wilt', title: 'Brightening Serum', desc: 'Inhibits melanin production for an even tone.', tag: 'Tranexamic Acid' };
+      } else if (concerns.includes('Fine Lines')) {
+        nightTreatment = { icon: 'fa-star', title: 'Anti-Aging Serum', desc: 'Stimulates collagen production and cell turnover.', tag: 'Retinol' };
+      }
+
+      amSteps.push(morningTreatment);
+      pmSteps.push(nightTreatment);
+
+      // 3. Moisturizer logic
+      if (skinType === 'Oily') {
+        amSteps.push({ icon: 'fa-leaf', title: 'Gel Moisturizer', desc: 'Lightweight hydration that won\'t clog pores.', tag: 'Oil-free' });
+        pmSteps.push({ icon: 'fa-leaf', title: 'Night Lotion', desc: 'Breathable moisture to balance oil production.', tag: 'Hyaluronic Acid' });
+      } else if (skinType === 'Dry') {
+        amSteps.push({ icon: 'fa-tint', title: 'Rich Moisturizer', desc: 'Deep nourishment to lock in hydration.', tag: 'Squalane' });
+        pmSteps.push({ icon: 'fa-moon', title: 'Heavy Night Cream', desc: 'Thick barrier cream to prevent trans-epidermal water loss.', tag: 'Shea Butter' });
+      } else {
+        amSteps.push({ icon: 'fa-pump-medical', title: 'Daily Moisturizer', desc: 'Maintains skin elasticity and health.', tag: 'Ceramides' });
+        pmSteps.push({ icon: 'fa-pump-medical', title: 'Nourishing Night Cream', desc: 'Restores skin barrier overnight.', tag: 'Panthenol' });
+      }
+
+      // 4. Protection (AM) & Extras (PM)
+      amSteps.push({ icon: 'fa-shield-halved', title: 'Sunscreen (SPF 50+)', desc: 'The most important step. Apply two fingers worth.', tag: 'Broad Spectrum' });
+      
+      if (concerns.includes('Dark Circles') || concerns.includes('Fine Lines')) {
+        pmSteps.push({ icon: 'fa-eye', title: 'Eye Cream', desc: 'Gentle hydration for the delicate eye area.', tag: 'Caffeine / Peptides' });
+      }
+
+      renderSteps(amSteps, 'am-steps');
+      renderSteps(pmSteps, 'pm-steps');
+    }
+
+    function renderSteps(steps, containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      
+      steps.forEach((step, index) => {
+        const div = document.createElement('div');
+        div.className = 'step-item';
+        div.innerHTML = `
+          <div class="step-icon">
+            <i class="fa-solid ${step.icon}"></i>
+          </div>
+          <div class="step-content">
+            <h4>Step ${index + 1}: ${step.title}</h4>
+            <p>${step.desc}</p>
+            ${step.tag ? `<span class="ingredient-tag">${step.tag}</span>` : ''}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>

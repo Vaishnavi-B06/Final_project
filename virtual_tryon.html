@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Virtual Try-On — SmartGlam</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- MediaPipe Libraries for Web AR -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <style>
+      /* Try-On Layout */
+      .tryon-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem 5%;
+      }
+
+      .tryon-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .tryon-header h2 {
+        font-family: var(--font-display);
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--ink);
+      }
+
+      .tryon-header p {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .studio-box {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-xl);
+        padding: 1.5rem;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+      }
+
+      @media (min-width: 860px) {
+        .studio-box {
+          flex-direction: row;
+        }
+      }
+
+      /* Camera Area */
+      .camera-wrapper {
+        position: relative;
+        flex: 1;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        background: #111;
+        min-height: 450px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .input_video {
+        display: none; /* Hide original video, we only show canvas */
+      }
+
+      .output_canvas {
+        width: 100%;
+        height: auto;
+        transform: scaleX(-1); /* Mirror effect */
+      }
+
+      .loading-ar {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(17, 17, 17, 0.8);
+        color: #fff;
+        font-family: var(--font-body);
+        z-index: 10;
+        transition: opacity 0.5s;
+      }
+
+      .loading-ar i {
+        font-size: 2.5rem;
+        color: var(--rose);
+        margin-bottom: 1rem;
+        animation: spin 2s linear infinite;
+      }
+
+      @keyframes spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Controls Area */
+      .controls-wrapper {
+        width: 100%;
+        background: var(--pearl);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+      }
+
+      @media (min-width: 860px) {
+        .controls-wrapper {
+          width: 360px;
+        }
+      }
+
+      .control-group {
+        margin-bottom: 2rem;
+      }
+
+      .control-group h3 {
+        font-size: 0.95rem;
+        color: var(--ink);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .cat-btn {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.8rem;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Color Swatches */
+      .swatch-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.8rem;
+      }
+
+      .color-swatch {
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 3px solid transparent;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: var(--t-fast);
+        position: relative;
+      }
+
+      .color-swatch.active {
+        border-color: var(--ink);
+        transform: scale(1.1);
+      }
+
+      .color-swatch span {
+        position: absolute;
+        bottom: -22px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.65rem;
+        color: var(--muted);
+        white-space: nowrap;
+        opacity: 0;
+        transition: var(--t-fast);
+        background: var(--ivory);
+        padding: 2px 6px;
+        border-radius: 4px;
+        pointer-events: none;
+        z-index: 5;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .color-swatch.active span,
+      .color-swatch:hover span {
+        opacity: 1;
+        bottom: -24px;
+      }
+
+      /* Intensity Slider */
+      .intensity-slider {
+        width: 100%;
+        -webkit-appearance: none;
+        height: 4px;
+        background: var(--glass-border);
+        border-radius: 2px;
+        outline: none;
+      }
+
+      .intensity-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--rose-dark);
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+
+      .action-btns {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        margin-top: 2rem;
+      }
+    </style>
+  </head>
+
+  <body class="dashboard-body">
+    <div class="orb-bg orb-1"></div>
+    <div class="orb-bg orb-3"></div>
+
+    <nav class="glass-nav">
+      <h1 class="logo">✦ SmartGlam</h1>
+      <a
+        href="dashboard.html"
+        class="btn btn-outline"
+        style="font-size: 0.82rem; padding: 0.5rem 1.2rem"
+        >← Dashboard</a
+      >
+    </nav>
+
+    <div class="tryon-container">
+      <div class="tryon-header">
+        <h2>Magic Mirror 🪞</h2>
+        <p>Try on your full recommended makeup routine in real-time AR.</p>
+      </div>
+
+      <div class="studio-box">
+        <!-- Camera View -->
+        <div class="camera-wrapper">
+          <div class="loading-ar" id="loader">
+            <i class="fa-solid fa-spinner"></i>
+            <p>Initialising Camera & AI Tracking...</p>
+          </div>
+          <video class="input_video" autoplay playsinline></video>
+          <canvas class="output_canvas" width="640" height="480"></canvas>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-wrapper">
+          <div class="control-group">
+            <h3><i class="fa-solid fa-layer-group"></i> Categories</h3>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap">
+              <button class="btn btn-primary cat-btn" id="cat-lips" onclick="setCategory('lips')">Lips</button>
+              <button class="btn btn-outline cat-btn" id="cat-blush" onclick="setCategory('blush')">Blush</button>
+              <button class="btn btn-outline cat-btn" id="cat-eyes" onclick="setCategory('eyes')">Eyeshadow</button>
+              <button class="btn btn-outline cat-btn" id="cat-liner" onclick="setCategory('liner')">Eyeliner</button>
+              <button class="btn btn-outline cat-btn" id="cat-glow" onclick="setCategory('glow')">Highlighter</button>
+              <button class="btn btn-outline cat-btn" id="cat-found" onclick="setCategory('foundation')">Foundation</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <h3 id="color-title">
+              <i class="fa-solid fa-palette"></i> Lip Colours
+            </h3>
+            <div class="swatch-grid" id="swatch-container">
+              <!-- Swatches will be generated by JS -->
+            </div>
+          </div>
+
+          <div class="control-group">
+            <h3 style="margin-bottom: 0.5rem">Intensity</h3>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.75rem;
+                color: var(--muted);
+                margin-bottom: 0.4rem;
+              "
+            >
+              <span>Subtle</span>
+              <span>Intense</span>
+            </div>
+            <input
+              type="range"
+              min="0.0"
+              max="0.8"
+              step="0.05"
+              value="0.4"
+              class="intensity-slider"
+              id="intensity"
+            />
+          </div>
+
+          <div class="action-btns">
+            <button
+              class="btn btn-primary"
+              onclick="takeSnapshot()"
+              style="justify-content: center; width: 100%"
+            >
+              <i class="fa-solid fa-camera"></i> Take Snapshot
+            </button>
+            <button
+              class="btn btn-secondary"
+              onclick="clearAll()"
+              style="
+                justify-content: center;
+                width: 100%;
+                background: transparent;
+                color: var(--ink);
+                border: 1px solid var(--glass-border);
+              "
+            >
+              Clear All Makeup
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="js/script.js"></script>
+
+    <script>
+      const COLORS = {
+        lips: [
+          { name: "None", code: "rgba(0,0,0,0)", visibleCode: "#e8e8e8" },
+          {
+            name: "Ruby Red",
+            code: "rgba(200, 20, 30, opacity)",
+            visibleCode: "#c8141e",
+          },
+          {
+            name: "Soft Pink",
+            code: "rgba(230, 110, 150, opacity)",
+            visibleCode: "#e66e96",
+          },
+          {
+            name: "Deep Plum",
+            code: "rgba(90, 20, 50, opacity)",
+            visibleCode: "#5a1432",
+          },
+          {
+            name: "Coral",
+            code: "rgba(255, 127, 80, opacity)",
+            visibleCode: "#ff7f50",
+          },
+          {
+            name: "Nude Peach",
+            code: "rgba(210, 150, 130, opacity)",
+            visibleCode: "#d29682",
+          },
+          {
+            name: "Berry",
+            code: "rgba(160, 30, 80, opacity)",
+            visibleCode: "#a01e50",
+          },
+          {
+            name: "Mocha",
+            code: "rgba(120, 60, 50, opacity)",
+            visibleCode: "#783c32",
+          },
+        ],
+        blush: [
+          { name: "None", code: "rgba(0,0,0,0)", visibleCode: "#e8e8e8" },
+          {
+            name: "Rose Pink",
+            code: "rgba(240, 120, 140, opacity)",
+            visibleCode: "#f0788c",
+          },
+          {
+            name: "Warm Peach",
+            code: "rgba(255, 160, 122, opacity)",
+            visibleCode: "#ffa07a",
+          },
+          {
+            name: "Coral Crush",
+            code: "rgba(255, 127, 80, opacity)",
+            visibleCode: "#ff7f50",
+          },
+          {
+            name: "Berry Flush",
+            code: "rgba(180, 50, 90, opacity)",
+            visibleCode: "#b4325a",
+          },
+          {
+            name: "Toasted Almond",
+            code: "rgba(200, 130, 110, opacity)",
+            visibleCode: "#c8826e",
+          },
+        ],
+        eyes: [
+          { name: "None", code: "rgba(0,0,0,0)", visibleCode: "#e8e8e8" },
+          {
+            name: "Champagne",
+            code: "rgba(240, 230, 210, opacity)",
+            visibleCode: "#f0e6d2",
+          },
+          {
+            name: "Rose Gold",
+            code: "rgba(224, 180, 170, opacity)",
+            visibleCode: "#e0b4aa",
+          },
+          {
+            name: "Smoky Brown",
+            code: "rgba(110, 80, 70, opacity)",
+            visibleCode: "#6e5046",
+          },
+          {
+            name: "Bronze",
+            code: "rgba(180, 110, 60, opacity)",
+            visibleCode: "#b46e3c",
+          },
+          {
+            name: "Amethyst",
+            code: "rgba(130, 90, 150, opacity)",
+            visibleCode: "#825a96",
+          },
+        ],
+        foundation: [
+          { name: "None", code: "rgba(0,0,0,0)", visibleCode: "#e8e8e8" },
+          { name: "Porcelain", code: "rgba(255, 230, 215, opacity)", visibleCode: "#ffe6d7" },
+          { name: "Ivory", code: "rgba(250, 215, 195, opacity)", visibleCode: "#fad7c3" },
+          { name: "Warm Beige", code: "rgba(235, 190, 160, opacity)", visibleCode: "#ebbea0" },
+          { name: "Honey", code: "rgba(210, 155, 120, opacity)", visibleCode: "#d29b78" },
+          { name: "Caramel", code: "rgba(180, 120, 85, opacity)", visibleCode: "#b47855" },
+          { name: "Mocha", code: "rgba(130, 80, 50, opacity)", visibleCode: "#825032" },
+        ],
+        liner: [
+          { name: "None", code: "rgba(0,0,0,0)", visibleCode: "#e8e8e8" },
+          { name: "Jet Black", code: "rgba(20, 20, 20, opacity)", visibleCode: "#141414" },
+          { name: "Charcoal", code: "rgba(60, 60, 65, opacity)", visibleCode: "#3c3c41" },
+          { name: "Deep Brown", code: "rgba(80, 50, 40, opacity)", visibleCode: "#503228" },
+          { name: "Navy Blue", code: "rgba(30, 40, 80, opacity)", visibleCode: "#1e2850" }
+        ],
+        glow: [
+          { name: "None", code: "rgba(0,0,0,0)", visibleCode: "#e8e8e8" },
+          { name: "Pearl", code: "rgba(255, 250, 240, opacity)", visibleCode: "#fffaf0" },
+          { name: "Champagne", code: "rgba(255, 228, 196, opacity)", visibleCode: "#ffe4c4" },
+          { name: "Liquid Gold", code: "rgba(255, 215, 0, opacity)", visibleCode: "#ffd700" }
+        ]
+      };
+
+      let activeCategory = "lips";
+      const state = {
+        lips: { color: COLORS.lips[1].code, opacity: 0.4 },
+        blush: { color: COLORS.blush[0].code, opacity: 0.3 },
+        eyes: { color: COLORS.eyes[0].code, opacity: 0.3 },
+        foundation: { color: COLORS.foundation[0].code, opacity: 0.2 },
+        liner: { color: COLORS.liner[0].code, opacity: 0.8 },
+        glow: { color: COLORS.glow[0].code, opacity: 0.5 },
+      };
+
+      function clearAll() {
+        state.lips = { color: COLORS.lips[0].code, opacity: 0.4 };
+        state.blush = { color: COLORS.blush[0].code, opacity: 0.3 };
+        state.eyes = { color: COLORS.eyes[0].code, opacity: 0.3 };
+        state.foundation = { color: COLORS.foundation[0].code, opacity: 0.2 };
+        state.liner = { color: COLORS.liner[0].code, opacity: 0.8 };
+        state.glow = { color: COLORS.glow[0].code, opacity: 0.5 };
+        renderSwatches();
+      }
+
+      function setCategory(cat) {
+        activeCategory = cat;
+        document.querySelectorAll(".cat-btn").forEach((b) => {
+          b.classList.remove("btn-primary");
+          b.classList.add("btn-outline");
+        });
+        document
+          .getElementById("cat-" + (cat === "foundation" ? "found" : cat))
+          .classList.remove("btn-outline");
+        document
+          .getElementById("cat-" + (cat === "foundation" ? "found" : cat))
+          .classList.add("btn-primary");
+
+        const titles = {
+          lips: "Lip Colours",
+          blush: "Blush Shades",
+          eyes: "Eyeshadows",
+          liner: "Eyeliners",
+          glow: "Highlighters",
+          foundation: "Foundation",
+        };
+        document.getElementById("color-title").innerHTML =
+          `<i class="fa-solid fa-palette"></i> ${titles[cat]}`;
+
+        document.getElementById("intensity").value = state[cat].opacity;
+        renderSwatches();
+      }
+
+      function renderSwatches() {
+        const container = document.getElementById("swatch-container");
+        container.innerHTML = "";
+        const list = COLORS[activeCategory];
+
+        list.forEach((c, i) => {
+          const el = document.createElement("div");
+          const isActive = state[activeCategory].color === c.code;
+          el.className = `color-swatch ${isActive ? "active" : ""}`;
+          el.style.backgroundColor = c.visibleCode;
+
+          if (i === 0) {
+            el.style.background =
+              "linear-gradient(45deg, #e8e8e8 45%, #ff4b4b 45%, #ff4b4b 55%, #e8e8e8 55%)";
+          }
+
+          const span = document.createElement("span");
+          span.textContent = c.name;
+          el.appendChild(span);
+
+          el.addEventListener("click", () => {
+            state[activeCategory].color = c.code;
+            renderSwatches();
+          });
+          container.appendChild(el);
+        });
+      }
+
+      document.getElementById("intensity").addEventListener("input", (e) => {
+        state[activeCategory].opacity = parseFloat(e.target.value);
+      });
+
+      // Initialize
+      renderSwatches();
+
+      // --- AR LOGIC USING MEDIAPIPE FACE MESH ---
+      const videoElement = document.querySelector(".input_video");
+      const canvasElement = document.querySelector(".output_canvas");
+      const canvasCtx = canvasElement.getContext("2d");
+      const loaderElement = document.getElementById("loader");
+
+      // Landmarks
+      const upperLipOuter = [61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291];
+      const upperLipInner = [78, 191, 80, 81, 82, 13, 312, 311, 310, 415, 308];
+      const lowerLipOuter = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291];
+      const lowerLipInner = [78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308];
+
+      // Face outline for foundation
+      const faceSilhouette = [
+        10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365,
+        379, 378, 400, 377, 152, 148, 176, 149, 150, 136, 172, 58, 132, 93, 234,
+        127, 162, 21, 54, 103, 67, 109,
+      ];
+
+      // Eyeshadow lids (Corrected polygon: Top crease then lower lid margin)
+      const leftEyeLid = [130, 226, 24, 110, 25, 156, 113, 225, 33, 246, 161, 160, 159, 158, 157, 173, 133];
+      const rightEyeLid = [359, 446, 254, 339, 255, 383, 342, 445, 263, 466, 388, 387, 386, 385, 384, 398, 362];
+
+      // Eyeliner (Upper lash line extended)
+      const leftEyeliner = [33, 246, 161, 160, 159, 158, 157, 173, 133, 155];
+      const rightEyeliner = [362, 398, 384, 385, 386, 387, 388, 466, 263, 249];
+
+      // Highlighter spots (Arrays of points to place a glow dot)
+      const highlighterPoints = [8, 168, 6, 195, 205, 425]; // Nose bridge and upper cheeks
+
+      function drawPath(landmarks, indices, fillOptions, strokeOptions) {
+        canvasCtx.beginPath();
+        for (let i = 0; i < indices.length; i++) {
+          const pt = landmarks[indices[i]];
+          const x = pt.x * canvasElement.width;
+          const y = pt.y * canvasElement.height;
+          if (i === 0) canvasCtx.moveTo(x, y);
+          else canvasCtx.lineTo(x, y);
+        }
+        if (fillOptions) {
+            canvasCtx.closePath();
+            canvasCtx.fill();
+        }
+        if (strokeOptions) {
+            canvasCtx.stroke();
+        }
+      }
+
+      function onResults(results) {
+        if (loaderElement.style.display !== "none") {
+          loaderElement.style.opacity = "0";
+          setTimeout(() => (loaderElement.style.display = "none"), 500);
+        }
+
+        canvasCtx.save();
+        // Mirror the canvas context since the CSS mirrors the canvas
+        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+        canvasCtx.drawImage(
+          results.image,
+          0,
+          0,
+          canvasElement.width,
+          canvasElement.height,
+        );
+
+        if (results.multiFaceLandmarks) {
+          for (const landmarks of results.multiFaceLandmarks) {
+            // 1. Foundation
+            if (state.foundation.color !== "rgba(0,0,0,0)") {
+              canvasCtx.save();
+              canvasCtx.fillStyle = state.foundation.color.replace(
+                "opacity",
+                state.foundation.opacity,
+              );
+              canvasCtx.globalCompositeOperation = "overlay";
+              canvasCtx.filter = "blur(10px)";
+              drawPath(landmarks, faceSilhouette, true, false);
+              canvasCtx.restore();
+            }
+
+            // 2. Blush
+            if (state.blush.color !== "rgba(0,0,0,0)") {
+              canvasCtx.save();
+              const leftCheek = landmarks[205];
+              const rightCheek = landmarks[425];
+              canvasCtx.fillStyle = state.blush.color.replace(
+                "opacity",
+                state.blush.opacity,
+              );
+              canvasCtx.globalCompositeOperation = "multiply";
+              canvasCtx.filter = "blur(20px)";
+
+              // Draw left cheek circle
+              canvasCtx.beginPath();
+              canvasCtx.arc(
+                leftCheek.x * canvasElement.width,
+                leftCheek.y * canvasElement.height,
+                40,
+                0,
+                2 * Math.PI,
+              );
+              canvasCtx.fill();
+
+              // Draw right cheek circle
+              canvasCtx.beginPath();
+              canvasCtx.arc(
+                rightCheek.x * canvasElement.width,
+                rightCheek.y * canvasElement.height,
+                40,
+                0,
+                2 * Math.PI,
+              );
+              canvasCtx.fill();
+              canvasCtx.restore();
+            }
+
+            // 3. Eyeshadow (Fixed logic)
+            if (state.eyes.color !== "rgba(0,0,0,0)") {
+              canvasCtx.save();
+              canvasCtx.fillStyle = state.eyes.color.replace(
+                "opacity",
+                state.eyes.opacity,
+              );
+              canvasCtx.globalCompositeOperation = "multiply";
+              canvasCtx.filter = "blur(10px)";
+              drawPath(landmarks, leftEyeLid, true, false);
+              drawPath(landmarks, rightEyeLid, true, false);
+              canvasCtx.restore();
+            }
+
+            // 3.a Eyeliner
+            if (state.liner.color !== "rgba(0,0,0,0)") {
+              canvasCtx.save();
+              canvasCtx.strokeStyle = state.liner.color.replace("opacity", state.liner.opacity);
+              canvasCtx.lineWidth = 4;
+              canvasCtx.lineCap = "round";
+              canvasCtx.lineJoin = "round";
+              canvasCtx.filter = "blur(1px)";
+              drawPath(landmarks, leftEyeliner, false, true);
+              drawPath(landmarks, rightEyeliner, false, true);
+              canvasCtx.restore();
+            }
+
+            // 3.b Highlighter
+            if (state.glow.color !== "rgba(0,0,0,0)") {
+              canvasCtx.save();
+              canvasCtx.fillStyle = state.glow.color.replace("opacity", state.glow.opacity);
+              canvasCtx.globalCompositeOperation = "screen";
+              canvasCtx.filter = "blur(15px)";
+              highlighterPoints.forEach(idx => {
+                  const pt = landmarks[idx];
+                  canvasCtx.beginPath();
+                  canvasCtx.arc(pt.x * canvasElement.width, pt.y * canvasElement.height, 12, 0, 2*Math.PI);
+                  canvasCtx.fill();
+              });
+              canvasCtx.restore();
+            }
+
+            // 4. Lips
+            if (state.lips.color !== "rgba(0,0,0,0)") {
+              canvasCtx.save();
+              canvasCtx.fillStyle = state.lips.color.replace(
+                "opacity",
+                state.lips.opacity,
+              );
+              canvasCtx.globalCompositeOperation = "multiply";
+              canvasCtx.filter = "blur(1px)";
+              drawPath(
+                landmarks,
+                [...upperLipOuter, ...upperLipInner.reverse()],
+                true, false
+              );
+              drawPath(
+                landmarks,
+                [...lowerLipOuter, ...lowerLipInner.reverse()],
+                true, false
+              );
+              canvasCtx.restore();
+            }
+          }
+        }
+        canvasCtx.restore();
+      }
+
+      const faceMesh = new FaceMesh({
+        locateFile: (file) => {
+          return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+        },
+      });
+
+      faceMesh.setOptions({
+        maxNumFaces: 1,
+        refineLandmarks: true,
+        minDetectionConfidence: 0.6,
+        minTrackingConfidence: 0.6,
+      });
+      faceMesh.onResults(onResults);
+
+      const camera = new Camera(videoElement, {
+        onFrame: async () => {
+          await faceMesh.send({ image: videoElement });
+        },
+        width: 640,
+        height: 480,
+      });
+
+      // Start Camera
+      camera.start().catch((err) => {
+        console.error(err);
+        loaderElement.innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="color:#ff4b4b;"></i>
+                                 <p style="color:#ff4b4b;">Camera access denied or unavailable.</p>`;
+      });
+
+      function takeSnapshot() {
+        const dataUrl = canvasElement.toDataURL("image/png");
+        const a = document.createElement("a");
+        a.href = dataUrl;
+        a.download = "smartglam-look.png";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        if (typeof showToast === "function")
+          showToast("Snapshot saved!", "success");
+      }
+    </script>
+  </body>
+</html>

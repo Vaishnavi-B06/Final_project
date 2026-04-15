@@ -1,0 +1,1342 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Look — SmartGlam</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .result-wrap {
+        min-height: calc(100vh - 70px);
+        padding: 3rem 5%;
+      }
+
+      .result-inner {
+        width: 100%;
+        max-width: 820px;
+        margin: 0 auto;
+      }
+
+      .result-hero {
+        text-align: center;
+        margin-bottom: 2.5rem;
+      }
+
+      .result-hero h2 {
+        font-family: var(--font-display);
+        font-size: 2.4rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+      }
+
+      .occasion-pill {
+        display: inline-block;
+        background: var(--rose-light);
+        color: var(--rose-dark);
+        border: 1px solid var(--rose);
+        border-radius: var(--radius-pill);
+        padding: 0.3rem 1.2rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        margin-top: 0.5rem;
+      }
+
+      /* Loading */
+      .loading-screen {
+        text-align: center;
+        padding: 4rem 2rem;
+      }
+
+      .loading-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin: 1.5rem auto;
+        max-width: 300px;
+      }
+
+      .loading-step {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.6rem 1rem;
+        border-radius: var(--radius-sm);
+        background: var(--champagne);
+        font-size: 0.84rem;
+        color: var(--muted);
+        transition: all 0.4s ease;
+        opacity: 0.5;
+      }
+
+      .loading-step.active {
+        opacity: 1;
+        background: var(--rose-light);
+        color: var(--rose-dark);
+        border: 1px solid var(--rose);
+      }
+
+      .loading-step.done {
+        opacity: 0.7;
+      }
+
+      .step-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--sand);
+        flex-shrink: 0;
+      }
+
+      .loading-step.active .step-dot {
+        background: var(--rose-deep);
+        animation: pulseDot 1s ease-in-out infinite;
+      }
+
+      /* Results */
+      .results-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+      }
+
+      .ai-card {
+        animation: fadeInUp 0.6s ease both;
+      }
+
+      .ai-card:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+
+      .ai-card:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .ai-card:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+
+      .ai-card:nth-child(4) {
+        animation-delay: 0.4s;
+      }
+
+      .ai-card:nth-child(5) {
+        animation-delay: 0.5s;
+      }
+
+      .ai-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+      }
+
+      .ai-card-header h3 {
+        font-size: 1.1rem;
+        color: var(--ink);
+      }
+
+      .products-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+        margin-top: 0.6rem;
+      }
+
+      .product-buy-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        background: var(--ivory);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-md);
+        padding: 0.75rem 1rem;
+        transition: var(--t-fast);
+      }
+
+      .product-buy-card:hover {
+        border-color: var(--rose);
+        box-shadow: 0 6px 20px rgba(196,130,138,0.12);
+        transform: translateY(-2px);
+      }
+
+      .product-buy-name {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--ink);
+        flex: 1;
+      }
+
+      .product-buy-btns {
+        display: flex;
+        gap: 0.5rem;
+        flex-shrink: 0;
+      }
+
+      .buy-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.4rem 0.85rem;
+        border-radius: var(--radius-pill);
+        text-decoration: none !important;
+        transition: var(--t-fast);
+        white-space: nowrap;
+      }
+
+      .buy-btn-nykaa {
+        background: linear-gradient(135deg, #D4828A, #B86070);
+        color: #fff;
+      }
+
+      .buy-btn-nykaa:hover {
+        background: linear-gradient(135deg, #B86070, #9A4A58);
+        transform: scale(1.04);
+      }
+
+      .buy-btn-amazon {
+        background: var(--champagne);
+        color: var(--sand-deep);
+        border: 1px solid var(--champagne-mid);
+      }
+
+      .buy-btn-amazon:hover {
+        background: var(--champagne-mid);
+        color: var(--brown);
+      }
+
+      /* Tutorial Launch Button */
+      .tutorial-launch {
+        background: linear-gradient(
+          135deg,
+          var(--rose-light),
+          var(--champagne)
+        );
+        border: 1.5px solid var(--rose);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        cursor: pointer;
+        transition: var(--t-mid);
+      }
+
+      .tutorial-launch:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 40px rgba(196, 130, 138, 0.2);
+      }
+
+      .tutorial-launch-text h4 {
+        font-family: var(--font-display);
+        font-size: 1.3rem;
+        color: var(--ink);
+        margin-bottom: 0.3rem;
+      }
+
+      .tutorial-launch-text p {
+        font-size: 0.84rem;
+        color: var(--warm-gray);
+      }
+
+      .result-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      /* Error */
+      .error-screen {
+        text-align: center;
+        padding: 3rem;
+        background: var(--rose-light);
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--rose);
+      }
+
+      .error-screen h3 {
+        font-family: var(--font-display);
+        color: var(--rose-dark);
+        margin-bottom: 0.6rem;
+      }
+
+      .error-screen p {
+        font-size: 0.88rem;
+        color: var(--warm-gray);
+        margin-bottom: 1rem;
+      }
+
+      .error-code {
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: var(--radius-sm);
+        padding: 0.6rem 1rem;
+        font-size: 0.76rem;
+        color: var(--muted);
+        font-family: monospace;
+        margin-bottom: 1.2rem;
+        text-align: left;
+      }
+
+      /* ============================================================
+       STEP-BY-STEP TUTORIAL MODAL
+       ============================================================ */
+      .tutorial-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(26, 18, 8, 0.7);
+        backdrop-filter: blur(6px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .tutorial-inner {
+        background: var(--ivory);
+        border-radius: var(--radius-xl);
+        max-width: 800px;
+        width: 100%;
+        overflow: hidden;
+        box-shadow: 0 48px 96px rgba(26, 18, 8, 0.3);
+        animation: slideUp 0.4s var(--ease-spring);
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .tutorial-header {
+        padding: 1.6rem 2rem 1rem;
+        border-bottom: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+      }
+
+      .tutorial-header-left h3 {
+        font-family: var(--font-display);
+        font-size: 1.4rem;
+        color: var(--ink);
+      }
+
+      .tutorial-header-left p {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 0.2rem;
+      }
+
+      .tutorial-close {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: var(--champagne);
+        color: var(--warm-gray);
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--t-fast);
+        flex-shrink: 0;
+      }
+
+      .tutorial-close:hover {
+        background: var(--rose-light);
+        color: var(--rose-dark);
+      }
+
+      .tutorial-body {
+        padding: 1.8rem 2rem;
+        overflow-y: auto;
+        flex: 1;
+      }
+
+      .tutorial-progress-bar {
+        height: 4px;
+        background: var(--champagne);
+        border-radius: 2px;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+      }
+
+      .tutorial-progress-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          var(--rose-deep),
+          var(--champagne-deep)
+        );
+        border-radius: 2px;
+        transition: width 0.5s var(--ease-smooth);
+      }
+
+      .tutorial-step-layout {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+
+      /* Face SVG area */
+      .face-container {
+        position: relative;
+        width: 180px;
+      }
+
+      .face-svg-area {
+        position: relative;
+        width: 180px;
+        height: 220px;
+        background: linear-gradient(160deg, #f5e0d0, #edd4c8);
+        border-radius: 50% 50% 45% 45% / 40% 40% 60% 60%;
+        overflow: visible;
+      }
+
+      .face-svg-area svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .face-highlight-zone {
+        position: absolute;
+        background: rgba(196, 130, 138, 0.25);
+        border: 2px solid var(--rose-deep);
+        border-radius: 50%;
+        transition: all 0.5s var(--ease-spring);
+        animation: pulseHL 1.8s ease-in-out infinite;
+        pointer-events: none;
+      }
+
+      @keyframes pulseHL {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(196, 130, 138, 0.4);
+        }
+
+        50% {
+          box-shadow: 0 0 0 10px rgba(196, 130, 138, 0);
+        }
+      }
+
+      .face-step-label {
+        text-align: center;
+        margin-top: 0.8rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--rose-dark);
+        background: var(--rose-light);
+        border-radius: var(--radius-pill);
+        padding: 0.25rem 0.7rem;
+      }
+
+      /* Step content */
+      .step-badge {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--rose-dark);
+        background: var(--rose-light);
+        border-radius: var(--radius-pill);
+        padding: 0.3rem 0.9rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .step-content h4 {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        color: var(--ink);
+        margin-bottom: 0.6rem;
+      }
+
+      .step-content p {
+        font-size: 0.9rem;
+        color: var(--warm-gray);
+        line-height: 1.7;
+        margin-bottom: 1rem;
+      }
+
+      .step-tip {
+        background: var(--champagne);
+        border-radius: var(--radius-sm);
+        padding: 0.8rem 1rem;
+        font-size: 0.82rem;
+        color: var(--sand-deep);
+        border-left: 3px solid var(--champagne-deep);
+        margin-bottom: 1rem;
+      }
+
+      .step-products {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      /* Footer nav */
+      .tutorial-footer {
+        padding: 1.2rem 2rem 1.5rem;
+        border-top: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+      }
+
+      .step-dots-row {
+        display: flex;
+        gap: 0.45rem;
+      }
+
+      .sdot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--sand);
+        border: none;
+        cursor: pointer;
+        transition: var(--t-fast);
+      }
+
+      .sdot.active {
+        width: 22px;
+        border-radius: 4px;
+        background: var(--rose-deep);
+      }
+
+      .tut-nav-btns {
+        display: flex;
+        gap: 0.8rem;
+      }
+
+      @media (max-width: 600px) {
+        .tutorial-step-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .face-container {
+          margin: 0 auto;
+        }
+
+        .hairstyle-gallery {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+
+  <body class="dashboard-body">
+    <div class="orb-bg orb-1"></div>
+    <div class="orb-bg orb-3"></div>
+
+    <nav class="glass-nav">
+      <h1 class="logo">✦ SmartGlam</h1>
+      <a
+        href="dashboard.html"
+        class="btn btn-outline"
+        style="font-size: 0.82rem; padding: 0.5rem 1.2rem"
+        >Home</a
+      >
+    </nav>
+
+    <div class="result-wrap">
+      <div class="result-inner">
+        <div class="result-hero">
+          <h2 id="result-title">Crafting Your Look...</h2>
+          <img
+            id="user-img"
+            class="result-preview-img hidden"
+            alt="Your photo"
+          />
+          <div>
+            <span class="occasion-pill" id="occasion-label">Loading...</span>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="ai-loading" class="glass-container loading-screen">
+          <div class="pulse-ring">
+            <div class="pulse-dot"></div>
+          </div>
+          <p
+            style="
+              font-size: 1rem;
+              color: var(--warm-gray);
+              margin-bottom: 0.4rem;
+            "
+          >
+            Gemini AI is crafting your look...
+          </p>
+          <p style="font-size: 0.8rem; color: var(--muted)">
+            This usually takes 5–15 seconds
+          </p>
+          <div class="loading-steps">
+            <div class="loading-step active" id="step-1">
+              <span class="step-dot"></span> Connecting to AI server
+            </div>
+            <div class="loading-step" id="step-2">
+              <span class="step-dot"></span> Analysing your features
+            </div>
+            <div class="loading-step" id="step-3">
+              <span class="step-dot"></span> Building your routine
+            </div>
+            <div class="loading-step" id="step-4">
+              <span class="step-dot"></span> Matching products
+            </div>
+          </div>
+        </div>
+
+        <!-- Error -->
+        <div id="ai-error" class="hidden">
+          <div class="error-screen">
+            <div style="font-size: 2.5rem; margin-bottom: 1rem">⚠️</div>
+            <h3>Analysis Failed</h3>
+            <p>
+              Could not connect to the AI server. Make sure the Python Flask
+              backend is running on port 5000.
+            </p>
+            <div class="error-code" id="error-detail">
+              Check console for details.
+            </div>
+            <div
+              style="
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+              "
+            >
+              <button class="btn btn-primary" onclick="retryAnalysis()">
+                ↻ Retry
+              </button>
+              <a href="occasion.html" class="btn btn-outline"
+                >Change Occasion</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div id="ai-results" class="hidden">
+          <div class="results-grid">
+            <div class="ai-card glass-container" style="padding: 1.4rem 1.6rem">
+              <div class="ai-card-header">
+                <h3>🔍 Skin Analysis</h3>
+                <span
+                  id="skin-type-badge"
+                  style="
+                    font-size: 0.72rem;
+                    background: var(--champagne);
+                    color: var(--sand-deep);
+                    border-radius: var(--radius-pill);
+                    padding: 0.2rem 0.8rem;
+                    font-weight: 700;
+                    border: 1px solid var(--champagne-mid);
+                  "
+                ></span>
+              </div>
+              <p
+                id="ai-skin"
+                style="
+                  font-size: 0.9rem;
+                  color: var(--warm-gray);
+                  line-height: 1.65;
+                "
+              ></p>
+            </div>
+            <div class="ai-card glass-container" style="padding: 1.4rem 1.6rem">
+              <h3 style="margin-bottom: 0.8rem">🧴 Skincare Prep</h3>
+              <p
+                id="ai-skincare"
+                style="
+                  font-size: 0.9rem;
+                  color: var(--warm-gray);
+                  line-height: 1.65;
+                "
+              ></p>
+            </div>
+            <div
+              class="ai-card glass-container"
+              id="makeup-card"
+              style="padding: 1.4rem 1.6rem"
+            >
+              <h3 id="makeup-card-title" style="margin-bottom: 0.8rem">
+                💄 Makeup Application
+              </h3>
+              <p
+                id="ai-makeup"
+                style="
+                  font-size: 0.9rem;
+                  color: var(--warm-gray);
+                  line-height: 1.65;
+                "
+              ></p>
+            </div>
+
+            <div class="ai-card glass-container" style="padding: 1.4rem 1.6rem">
+              <h3 style="margin-bottom: 0.8rem">🛍️ Recommended Products</h3>
+              <div class="products-wrap" id="ai-products"></div>
+            </div>
+          </div>
+
+          <!-- Tutorial launch button -->
+          <div class="tutorial-launch" id="tutorial-launch-btn" onclick="openTutorial()">
+            <div class="tutorial-launch-text">
+              <h4 id="tutorial-btn-title">▶ Start Step-by-Step Tutorial</h4>
+              <p id="tutorial-btn-sub">Interactive guide with face model — see exactly where to apply each product</p>
+            </div>
+            <button class="btn btn-primary" style="flex-shrink:0;white-space:nowrap;">Open Tutorial →</button>
+          </div>
+
+          <div class="result-actions">
+            <button
+              class="btn btn-primary"
+              onclick="window.location.href = 'occasion.html'"
+            >
+              ✨ New Analysis
+            </button>
+            <button class="btn btn-secondary" onclick="printResults()">
+              🖨️ Save / Print
+            </button>
+            <a href="dashboard.html" class="btn btn-outline">← Dashboard</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+       TUTORIAL MODAL
+       ============================================================ -->
+    <div id="tutorial-modal" class="tutorial-modal hidden">
+      <div class="tutorial-inner">
+        <div class="tutorial-header">
+          <div class="tutorial-header-left">
+            <h3 id="tut-title">💄 Step-by-Step Makeup Tutorial</h3>
+            <p id="tut-subtitle">Follow each step for a flawless result</p>
+          </div>
+          <button class="tutorial-close" onclick="closeTutorial()">✕</button>
+        </div>
+
+        <div class="tutorial-body">
+          <div class="tutorial-progress-bar">
+            <div
+              class="tutorial-progress-fill"
+              id="tut-progress"
+              style="width: 10%"
+            ></div>
+          </div>
+
+          <div class="tutorial-step-layout">
+            <!-- Face model -->
+            <div class="face-container" id="face-container">
+              <div class="face-svg-area" id="face-svg-area">
+                <!-- Simple face SVG -->
+                <svg
+                  viewBox="0 0 180 220"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <!-- Head shape -->
+                  <ellipse
+                    cx="90"
+                    cy="100"
+                    rx="72"
+                    ry="88"
+                    fill="#EDD4C0"
+                    opacity="0.5"
+                  />
+                  <!-- Eyes -->
+                  <ellipse cx="65" cy="90" rx="12" ry="8" fill="white" />
+                  <ellipse cx="115" cy="90" rx="12" ry="8" fill="white" />
+                  <circle cx="65" cy="90" r="5" fill="#3D2B1A" />
+                  <circle cx="115" cy="90" r="5" fill="#3D2B1A" />
+                  <circle cx="66" cy="89" r="1.5" fill="white" />
+                  <circle cx="116" cy="89" r="1.5" fill="white" />
+                  <!-- Eyebrows -->
+                  <path
+                    d="M53 78 Q65 72 77 78"
+                    stroke="#3D2B1A"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    fill="none"
+                  />
+                  <path
+                    d="M103 78 Q115 72 127 78"
+                    stroke="#3D2B1A"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    fill="none"
+                  />
+                  <!-- Nose -->
+                  <path
+                    d="M90 95 L84 115 Q90 120 96 115 Z"
+                    fill="#D4A070"
+                    opacity="0.3"
+                  />
+                  <circle cx="84" cy="114" r="4" fill="#C89060" opacity="0.4" />
+                  <circle cx="96" cy="114" r="4" fill="#C89060" opacity="0.4" />
+                  <!-- Lips -->
+                  <path
+                    d="M76 132 Q83 126 90 130 Q97 126 104 132 Q97 142 90 144 Q83 142 76 132 Z"
+                    fill="#C87880"
+                    opacity="0.6"
+                  />
+                  <!-- Cheeks -->
+                  <ellipse
+                    cx="52"
+                    cy="120"
+                    rx="14"
+                    ry="10"
+                    fill="#E8A0A0"
+                    opacity="0.25"
+                  />
+                  <ellipse
+                    cx="128"
+                    cy="120"
+                    rx="14"
+                    ry="10"
+                    fill="#E8A0A0"
+                    opacity="0.25"
+                  />
+                </svg>
+                <!-- Highlight zone (dynamically positioned) -->
+                <div
+                  class="face-highlight-zone"
+                  id="face-highlight"
+                  style="display: none"
+                ></div>
+              </div>
+              <div class="face-step-label" id="face-step-label">
+                Preparing...
+              </div>
+            </div>
+
+            <!-- Step content -->
+            <div class="step-content">
+              <div class="step-badge" id="step-badge">Step 1 of 8</div>
+              <h4 id="tut-step-title">Loading...</h4>
+              <p id="tut-step-desc">
+                Please wait while we prepare your tutorial.
+              </p>
+              <div
+                class="step-tip"
+                id="tut-step-tip"
+                style="display: none"
+              ></div>
+              <div class="step-products" id="tut-step-products"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tutorial-footer">
+          <div class="step-dots-row" id="tut-dots"></div>
+          <div class="tut-nav-btns">
+            <button
+              class="btn btn-outline"
+              id="tut-prev"
+              onclick="tutNav(-1)"
+              style="font-size: 0.82rem; padding: 0.6rem 1.2rem"
+            >
+              ← Prev
+            </button>
+            <button
+              class="btn btn-primary"
+              id="tut-next"
+              onclick="tutNav(1)"
+              style="font-size: 0.82rem; padding: 0.6rem 1.2rem"
+            >
+              Next →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="js/script.js"></script>
+    <script>
+      // ============================================================
+      //  CONSTANTS
+      // ============================================================
+      const BACKEND_URL = "http://127.0.0.1:5000/analyze";
+      const BACKEND_PROFILE_URL = "http://127.0.0.1:5000/analyze-profile";
+      const STEPS = ["step-1", "step-2", "step-3", "step-4"];
+      let stepIndex = 0,
+        stepTimer = null;
+      let currentGender = "female";
+      let tutorialSteps = [],
+        tutStep = 0;
+
+      // ============================================================
+      //  FEMALE TUTORIAL STEPS
+      // ============================================================
+      const FEMALE_STEPS = [
+        {
+          title: "Cleanse & Prep Skin",
+          zone: { top: "5%", left: "20%", width: "60%", height: "55%" },
+          label: "Full Face",
+          desc: "Start with a gentle cleanser suited to your skin type. Remove all impurities, rinse with lukewarm water and pat dry with a soft towel. This is the most important step — clean skin ensures everything else applies smoothly.",
+          tip: "💡 Pro tip: Use micellar water if you have sensitive skin. Never skip cleansing!",
+          products: [
+            "Cetaphil Gentle Cleanser",
+            "Ponds Face Wash",
+            "Biotique Papaya Face Wash",
+          ],
+        },
+        {
+          title: "Moisturise & Prime",
+          zone: { top: "10%", left: "25%", width: "50%", height: "48%" },
+          label: "Forehead + Cheeks",
+          desc: "Apply a lightweight moisturiser all over your face. Wait 2 minutes, then use a makeup primer to create a smooth canvas that makes your foundation last longer.",
+          tip: "💡 Dab primer gently — don't rub it in. Focus on pores and fine lines.",
+          products: [
+            "Lakme Peach Milk Moisturiser",
+            "Maybelline Baby Skin Primer",
+            "Faces Canada Mattifying Primer",
+          ],
+        },
+        {
+          title: "Foundation",
+          zone: { top: "15%", left: "22%", width: "56%", height: "52%" },
+          label: "Face Coverage",
+          desc: "Apply foundation matching your skin tone using a damp beauty sponge or flat brush. Start from the centre of your face and blend outward in circular motions. Build coverage gradually — one thin layer first.",
+          tip: "💡 Tap, don't swipe, for a flawless airbrush effect.",
+          products: [
+            "Maybelline Fit Me Foundation",
+            "Lakme Unibase",
+            "Swiss Beauty Foundation",
+          ],
+        },
+        {
+          title: "Concealer & Contour",
+          zone: { top: "35%", left: "15%", width: "70%", height: "40%" },
+          label: "Under Eyes + Nose",
+          desc: "Apply concealer one shade lighter under your eyes in a triangle shape. Blend well. Use a contour powder or bronzer along the sides of your nose, cheekbones, and jawline to add definition.",
+          tip: "💡 The under-eye triangle trick makes you look instantly more awake!",
+          products: [
+            "Maybelline Fit Me Concealer",
+            "Nykaa SKINgenius Concealer",
+            "Faces Canada Contour",
+          ],
+        },
+        {
+          title: "Eyes — Shadow & Liner",
+          zone: { top: "30%", left: "15%", width: "70%", height: "30%" },
+          label: "Eye Area",
+          desc: "Apply eyeshadow starting with a neutral base on the lid, then add your chosen colour to the crease for depth. Line your upper lash line with eyeliner. For a bigger eye effect, also line the waterline with a nude pencil.",
+          tip: "💡 Blend the crease colour in small circular motions for a professional finish.",
+          products: [
+            "Colorbar Eye Shadow Palette",
+            "Maybelline Hypersharp Liner",
+            "L.A Colors Liner",
+          ],
+        },
+        {
+          title: "Mascara & Brows",
+          zone: { top: "28%", left: "18%", width: "64%", height: "25%" },
+          label: "Eyes & Brows",
+          desc: "Apply mascara from the root of your lashes to the tips with a zigzag motion. Fill in your brows with short upward strokes using a brow pencil or powder, following your natural arch.",
+          tip: "💡 Comb brows upward with a spoolie before filling — it reveals their natural shape.",
+          products: [
+            "Maybelline Colossal Mascara",
+            "Lakme Eyeconic Mascara",
+            "Colorbar Brow Pencil",
+          ],
+        },
+        {
+          title: "Blush & Highlight",
+          zone: { top: "40%", left: "10%", width: "80%", height: "35%" },
+          label: "Cheeks",
+          desc: "Smile gently and apply blush on the apples of your cheeks, blending upward toward your temples. Apply highlighter to the tops of your cheekbones, the bridge of your nose, and your cupid's bow.",
+          tip: "💡 Tap off excess blush from the brush — it's easier to add more than to remove!",
+          products: [
+            "Lakme Rose Blush",
+            "Colorbar Illuminator",
+            "Essence Cosmetics Blush",
+          ],
+        },
+        {
+          title: "Lips — Liner & Lipstick",
+          zone: { top: "63%", left: "28%", width: "44%", height: "22%" },
+          label: "Lips",
+          desc: "Line your lips with a lip liner slightly overlining for a fuller look. Fill in with your chosen lipstick shade. Blot with tissue, then apply a second coat for lasting wear. Optional: add a touch of gloss to the centre of your lower lip.",
+          tip: "💡 Overlining just the cupid's bow makes lips look fuller without looking unnatural.",
+          products: [
+            "Maybelline Color Sensational Lipstick",
+            "Lakme 9to5 Lip Pencil",
+            "Swiss Beauty Matte Lipstick",
+          ],
+        },
+      ];
+
+      // ============================================================
+      //  LOADING ANIMATION
+      // ============================================================
+      function advanceStep() {
+        if (stepIndex < STEPS.length) {
+          if (stepIndex > 0) {
+            document
+              .getElementById(STEPS[stepIndex - 1])
+              .classList.remove("active");
+            document.getElementById(STEPS[stepIndex - 1]).classList.add("done");
+          }
+          document.getElementById(STEPS[stepIndex]).classList.add("active");
+          stepIndex++;
+        }
+      }
+      function startStepAnimation() {
+        advanceStep();
+        stepTimer = setInterval(() => {
+          if (stepIndex < STEPS.length) advanceStep();
+          else clearInterval(stepTimer);
+        }, 2800);
+      }
+
+      // ============================================================
+      //  SHOW / HIDE STATES
+      // ============================================================
+
+      // Safely converts any value (string, object, array) to readable text
+      function safeText(val) {
+        if (val === null || val === undefined) return "";
+        if (typeof val === "string") return val.trim();
+        if (Array.isArray(val)) return val.map(safeText).filter(Boolean).join("\n");
+        if (typeof val === "object") {
+          // Try common keys first
+          const keys = ["description","text","content","summary","steps","instructions","details","value","name"];
+          for (const k of keys) {
+            if (val[k] !== undefined) return safeText(val[k]);
+          }
+          // Fallback: join all values
+          return Object.entries(val)
+            .map(([k, v]) => `${k}: ${safeText(v)}`)
+            .join("\n");
+        }
+        return String(val).trim();
+      }
+
+      // Safely extracts product names from any structure
+      function safeProducts(val) {
+        if (!val) return [];
+        if (Array.isArray(val)) {
+          return val.map(p => {
+            if (typeof p === "string") return p.trim();
+            if (typeof p === "object" && p !== null)
+              return p.name || p.product || p.title || p.brand || Object.values(p).join(" — ");
+            return String(p).trim();
+          }).filter(Boolean);
+        }
+        if (typeof val === "string") return val.split(",").map(s => s.trim()).filter(Boolean);
+        if (typeof val === "object") return safeProducts(Object.values(val));
+        return [];
+      }
+
+      function showError(msg) {
+        clearInterval(stepTimer);
+        document.getElementById("ai-loading").classList.add("hidden");
+        document.getElementById("ai-error").classList.remove("hidden");
+        document.getElementById("error-detail").textContent = msg;
+      }
+
+      function showResults(data) {
+        clearInterval(stepTimer);
+        STEPS.forEach((id) => {
+          const el = document.getElementById(id);
+          el.classList.remove("active");
+          el.classList.add("done");
+        });
+        setTimeout(() => {
+          document.getElementById("ai-loading").classList.add("hidden");
+          document.getElementById("ai-results").classList.remove("hidden");
+
+          // Use safeText to prevent [object Object]
+          document.getElementById("ai-skin").textContent =
+            safeText(data.skin_type) || "Analysis complete.";
+          document.getElementById("ai-skincare").textContent =
+            safeText(data.skincare) || "Skincare steps ready.";
+          document.getElementById("ai-makeup").textContent =
+            safeText(data.makeup) || "Makeup guide ready.";
+
+          // Skin type badge
+          const skinBadge = document.getElementById("skin-type-badge");
+          if (data.skin_type) {
+            skinBadge.textContent = safeText(data.skin_type).split(" ").slice(0, 3).join(" ");
+          }
+
+          // Products — with Nykaa + Amazon buy buttons
+          const container = document.getElementById("ai-products");
+          container.innerHTML = "";
+          const products = safeProducts(data.products);
+          if (products.length > 0) {
+            products.forEach((p) => {
+              const card = document.createElement("div");
+              card.className = "product-buy-card";
+              card.innerHTML = `
+                <span class="product-buy-name">🛍️ ${p}</span>
+                <div class="product-buy-btns">
+                  <a class="buy-btn buy-btn-nykaa"
+                     href="https://www.nykaa.com/search/result/?q=${encodeURIComponent(p)}"
+                     target="_blank" rel="noopener">
+                    <i class="fa-solid fa-bag-shopping"></i> Nykaa
+                  </a>
+                  <a class="buy-btn buy-btn-amazon"
+                     href="https://www.amazon.in/s?k=${encodeURIComponent(p + ' makeup')}"
+                     target="_blank" rel="noopener">
+                    <i class="fa-brands fa-amazon"></i> Amazon
+                  </a>
+                </div>`;
+              container.appendChild(card);
+            });
+          } else {
+            container.textContent = "Product list not available.";
+          }
+        }, 600);
+      }
+
+      // ============================================================
+      //  MAIN ANALYSIS
+      // ============================================================
+      async function runAnalysis() {
+        const occasion = localStorage.getItem("selectedOccasion") || "Casual";
+        const image = localStorage.getItem("uploadedImageBase64");
+        const skinProfile = localStorage.getItem("skinProfile");
+
+        document.getElementById("result-title").textContent =
+          occasion + " Look";
+        document.getElementById("occasion-label").textContent = "✦ " + occasion;
+
+        const isSkinProfileMode = skinProfile && !image;
+
+        if (isSkinProfileMode) {
+          const profile = JSON.parse(skinProfile);
+          const imgEl = document.getElementById("user-img");
+          imgEl.style.display = "none";
+          const parent = imgEl.parentElement;
+          if (!document.getElementById("tone-avatar")) {
+            const avatar = document.createElement("div");
+            avatar.id = "tone-avatar";
+            avatar.style.cssText = `width:130px;height:130px;border-radius:50%;background:${profile.toneHex || "#C68642"};border:4px solid var(--rose-light);box-shadow:0 0 0 8px rgba(232,180,184,0.25);margin:1.5rem auto;display:flex;align-items:center;justify-content:center;font-size:2.5rem;animation:zoomPreview 0.6s cubic-bezier(0.34,1.56,0.64,1) both;`;
+            avatar.textContent = "🎨";
+            parent.insertBefore(avatar, imgEl.nextSibling);
+          }
+        } else if (image) {
+          const imgEl = document.getElementById("user-img");
+          imgEl.src = image;
+          imgEl.classList.remove("hidden");
+        }
+
+        if (!image && !skinProfile) {
+          showError(
+            "No photo or skin profile found. Please start from the dashboard.",
+          );
+          return;
+        }
+
+        startStepAnimation();
+
+        try {
+          let response;
+          if (isSkinProfileMode) {
+            const profile = JSON.parse(skinProfile);
+            // Inject gender into profile for backend
+            profile.gender = currentGender;
+            response = await fetch(BACKEND_PROFILE_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                profile,
+                occasion,
+                gender: currentGender,
+              }),
+            });
+          } else {
+            response = await fetch(BACKEND_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ image, occasion, gender: currentGender }),
+            });
+          }
+
+          if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(
+              `Server responded with ${response.status}: ${errText}`,
+            );
+          }
+          const data = await response.json();
+          if (data.error) throw new Error(data.error);
+          console.log("✅ AI Analysis received:", data);
+          showResults(data);
+        } catch (err) {
+          console.error("❌ Analysis Error:", err);
+          showError(
+            err.message.includes("fetch")
+              ? "Cannot connect to Flask server. Run: python app.py"
+              : err.message,
+          );
+        }
+      }
+
+      function retryAnalysis() {
+        stepIndex = 0;
+        clearInterval(stepTimer);
+        STEPS.forEach((id) => {
+          const el = document.getElementById(id);
+          el.classList.remove("active", "done");
+        });
+        document.getElementById("ai-error").classList.add("hidden");
+        document.getElementById("ai-results").classList.add("hidden");
+        document.getElementById("ai-loading").classList.remove("hidden");
+        const av = document.getElementById("tone-avatar");
+        if (av) av.remove();
+        runAnalysis();
+      }
+
+      function printResults() {
+        window.print();
+      }
+
+      // ============================================================
+      //  TUTORIAL MODAL
+      // ============================================================
+      function openTutorial() {
+        const modal = document.getElementById("tutorial-modal");
+        modal.classList.remove("hidden");
+        tutorialSteps = FEMALE_STEPS;
+        tutStep = 0;
+
+        const title = document.getElementById("tut-title");
+        title.textContent = "💄 Step-by-Step Makeup Tutorial";
+
+        buildDots();
+        renderTutStep();
+      }
+
+      function closeTutorial() {
+        document.getElementById("tutorial-modal").classList.add("hidden");
+      }
+
+      function buildDots() {
+        const row = document.getElementById("tut-dots");
+        row.innerHTML = "";
+        tutorialSteps.forEach((_, i) => {
+          const d = document.createElement("button");
+          d.className = "sdot" + (i === 0 ? " active" : "");
+          d.onclick = () => {
+            tutStep = i;
+            renderTutStep();
+          };
+          row.appendChild(d);
+        });
+      }
+
+      function renderTutStep() {
+        const step = tutorialSteps[tutStep];
+        if (!step) return;
+
+        // Progress bar
+        const pct = ((tutStep + 1) / tutorialSteps.length) * 100;
+        document.getElementById("tut-progress").style.width = pct + "%";
+
+        // Badge
+        document.getElementById("step-badge").textContent =
+          `Step ${tutStep + 1} of ${tutorialSteps.length}`;
+        document.getElementById("tut-step-title").textContent = step.title;
+        document.getElementById("tut-step-desc").textContent = step.desc;
+
+        // Tip
+        const tipEl = document.getElementById("tut-step-tip");
+        if (step.tip) {
+          tipEl.textContent = step.tip;
+          tipEl.style.display = "block";
+        } else {
+          tipEl.style.display = "none";
+        }
+
+        // Products
+        const prodsEl = document.getElementById("tut-step-products");
+        prodsEl.innerHTML = "";
+        prodsEl.style.flexDirection = "column";
+        (step.products || []).forEach((p) => {
+          const card = document.createElement("div");
+          card.className = "product-buy-card";
+          card.innerHTML = `
+            <span class="product-buy-name">🛍️ ${p}</span>
+            <div class="product-buy-btns">
+              <a class="buy-btn buy-btn-nykaa"
+                 href="https://www.nykaa.com/search/result/?q=${encodeURIComponent(p)}"
+                 target="_blank" rel="noopener">
+                <i class="fa-solid fa-bag-shopping"></i> Nykaa
+              </a>
+              <a class="buy-btn buy-btn-amazon"
+                 href="https://www.amazon.in/s?k=${encodeURIComponent(p + ' makeup')}"
+                 target="_blank" rel="noopener">
+                <i class="fa-brands fa-amazon"></i> Amazon
+              </a>
+            </div>`;
+          prodsEl.appendChild(card);
+        });
+
+        // Face highlight
+        const highlight = document.getElementById("face-highlight");
+        const faceLabel = document.getElementById("face-step-label");
+        if (step.zone) {
+          highlight.style.display = "block";
+          highlight.style.top = step.zone.top;
+          highlight.style.left = step.zone.left;
+          highlight.style.width = step.zone.width;
+          highlight.style.height = step.zone.height;
+          faceLabel.textContent = step.label || step.title;
+        } else {
+          highlight.style.display = "none";
+        }
+
+        // Dots
+        document
+          .querySelectorAll(".sdot")
+          .forEach((d, i) => d.classList.toggle("active", i === tutStep));
+
+        // Nav buttons
+        document.getElementById("tut-prev").disabled = tutStep === 0;
+        const nextBtn = document.getElementById("tut-next");
+        if (tutStep === tutorialSteps.length - 1) {
+          nextBtn.textContent = "Finish ✓";
+          nextBtn.onclick = () => closeTutorial();
+        } else {
+          nextBtn.textContent = "Next →";
+          nextBtn.onclick = () => tutNav(1);
+        }
+      }
+
+      function tutNav(dir) {
+        tutStep = Math.max(
+          0,
+          Math.min(tutorialSteps.length - 1, tutStep + dir),
+        );
+        renderTutStep();
+      }
+
+      // Boot
+      document.addEventListener("DOMContentLoaded", runAnalysis);
+    </script>
+  </body>
+</html>
